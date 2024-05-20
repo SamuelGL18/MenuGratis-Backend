@@ -1,5 +1,5 @@
-const User = require("../../model/User");
-const upload = require("../../middleware/uploadImage"); // Import the upload middleware
+const User = require("../../model/Usuario");
+const upload = require("../../middleware/subirImagen"); // Import the upload middleware
 
 const agregarProducto = async (req, res) => {
   try {

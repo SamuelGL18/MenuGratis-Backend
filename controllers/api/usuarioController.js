@@ -1,4 +1,4 @@
-const User = require("../../model/User");
+const User = require("../../model/Usuario");
 
 const getUserInfo = async (req, res) => {
   const foundUser = await User.findOne({ username: req.user }).exec();

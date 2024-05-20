@@ -1,22 +1,23 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const storeSchema = new Schema({
-  icon: {
+const tienda = new Schema({
+  logo: {
     type: String,
   },
-  storePhoto: {
+  tiendaFoto: {
     type: String,
   },
-  storeName: {
+  nombreTienda: {
     type: String,
   },
-  description: {
+  descripcion: {
     type: Boolean,
   },
-  location: {
+  ubicacion: {
     type: String,
   },
+  categorias: [String],
 });
 
-module.exports = storeSchema;
+module.exports = tienda;

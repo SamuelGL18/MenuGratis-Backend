@@ -1,4 +1,4 @@
-const User = require("../../model/User");
+const User = require("../../model/Usuario");
 
 const handleAgregarAlCarrito = async (req, res) => {
   try {
