@@ -3,12 +3,14 @@ const asyncHandler = require("express-async-handler");
 
 const getTienda = asyncHandler(async (req, res) => {
   // Verifican parametros
-  if (!req?.params?.id)
+  if (!req?.params?.usuario)
     return res.status(400).json({ message: "No se ha enviado el ID" });
 
   // Retornando usuario
-  const tiendaEncontrada = await Usuario.findOne({ _id: req.params.id })
-    .select("nombreUsuario mercancias tienda")
+  const tiendaEncontrada = await Usuario.findOne({
+    nombreUsuario: req.params.usuario,
+  })
+    .select("nombreUsuario mercancias tienda pedidosRecividos")
     .lean();
   if (!tiendaEncontrada) {
     return res.status(204).json({ message: `No se ha encontrado la tienda` });
@@ -17,27 +19,31 @@ const getTienda = asyncHandler(async (req, res) => {
 });
 
 const getProducto = asyncHandler(async (req, res) => {
+  // Obteniendo parametros
+  const { usuario, idproducto } = req.params;
   // Verificando parametros
-  if (!req?.params?.idproducto)
+  if (!idproducto)
     return res.status(400).json({ message: "No hay ID del producto" });
 
+  if (!usuario) return res.status(400).json({ message: "No hay Usuario" });
+
   // Buscando la tienda
-  const usuario = await User.findOne({ username: req.user })
-    .select("saleItems")
+  const usuarioEncontrado = await Usuario.findOne({ nombreUsuario: usuario })
+    .select("mercancias")
     .lean();
 
   // Verificando si existe el producto
-  const productoIndex = usuario.saleItems.findIndex((item) =>
-    item._id.equals(req?.params?.idproducto)
+  const productoIndex = usuarioEncontrado.mercancias.findIndex((item) =>
+    item._id.equals(idproducto)
   );
   if (productoIndex === -1) {
     return res
       .status(204)
-      .json({ message: `No existe el producto ${req?.params?.idproducto}.` });
+      .json({ message: `No existe el producto ${idproducto}.` });
   }
 
   // Retornando el producto
-  const producto = usuario.saleItems[productoIndex];
+  const producto = usuarioEncontrado.mercancias[productoIndex];
   res.json(producto);
 });
 

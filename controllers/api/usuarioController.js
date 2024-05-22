@@ -1,8 +1,12 @@
-const User = require("../../model/Usuario");
+const Usuario = require("../../model/Usuario");
 
-const getUserInfo = async (req, res) => {
-  const foundUser = await User.findOne({ username: req.user }).exec();
-  if (!foundUser) return res.sendStatus(403);
-  res.json(foundUser);
+const getUsuarioInfo = async (req, res) => {
+  const usuarioEncontrado = await Usuario.findOne({
+    nombreUsuario: req.username,
+  })
+    .select("-password -refreshToken")
+    .lean();
+  if (!usuarioEncontrado) return res.sendStatus(403);
+  res.json(usuarioEncontrado);
 };
-module.exports = { getUserInfo };
+module.exports = { getUsuarioInfo };

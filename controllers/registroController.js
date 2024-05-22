@@ -8,6 +8,7 @@ const ingresarNuevoUsuario = asyncHandler(async (req, res) => {
   const nuevoUsuario = await Usuario.create({
     nombreUsuario,
     password: passwordEncriptada,
+    tienda: {},
   });
   if (nuevoUsuario) {
     res.status(201).json(nuevoUsuario.nombreUsuario);

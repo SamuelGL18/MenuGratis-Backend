@@ -1,45 +1,50 @@
-const User = require("../../model/Usuario");
-const upload = require("../../middleware/subirImagen"); // Import the upload middleware
+const Usuario = require("../../model/Usuario");
+const upload = require("../../middleware/subirImagen");
+const asyncHandler = require("express-async-handler");
 
-const agregarProducto = async (req, res) => {
+const agregarProducto = asyncHandler(async (req, res) => {
+  //* Inicio de multer
   try {
-    // Use upload middleware to handle image upload (placed first)
-    upload.single("image")(req, res, async (err) => {
+    // Almacenar la imagen en la carpeta uploads
+    upload.single("imagen")(req, res, async (err) => {
       if (err) {
         console.error(err);
         return res.status(500).send("Upload failed");
       }
 
-      // Now `req.file` should be populated if upload succeeds
-      const { filename } = req.file; // Destructure filename
+      // Obtener el nombre del archivo
+      const { filename } = req.file;
+      //* ...Fin de multer
 
-      // ... rest of your code ...
       const item = req.body;
 
-      const foundUser = await User.findOne({ username: req.user }).exec();
-      if (!foundUser) return res.sendStatus(403);
+      const usuarioEncontrado = await Usuario.findOne({
+        nombreUsuario: req.username,
+      }).exec();
+      if (!usuarioEncontrado) return res.sendStatus(403);
+      if (!usuarioEncontrado.tienda.categorias.includes(item.categoria)) {
+        usuarioEncontrado.tienda.categorias.push(item.categoria);
+      }
+      item.imagen = filename;
+      usuarioEncontrado?.mercancias?.push(item);
 
-      item.image = filename; // Store the filename in the product schema
-      foundUser.saleItems.push(item); // Add the product to the user's cart
-
-      await foundUser.save();
-      res.json({ response: "Done" });
+      await usuarioEncontrado.save();
+      res.sendStatus(201);
     });
   } catch (error) {
-    // ... error handling ...
     console.error(error);
-    res.status(500).send("Server error");
+    res.status(500).send("Hubo un error al tratar de crear el producto");
   }
-};
+});
 
-const actualizarProducto = async (req, res) => {
+const actualizarProducto = asyncHandler(async (req, res) => {
   if (!req?.params?.idproducto) {
     return res
       .status(400)
       .json({ message: "No se ha encontrado ese producto" });
   }
-  const usuario = await User.findOne({ username: req.user }).exec();
-  const productoIndex = usuario.saleItems.findIndex((item) =>
+  const usuario = await Usuario.findOne({ nombreUsuario: req.username }).exec();
+  const productoIndex = usuario?.mercancias?.findIndex((item) =>
     item._id.equals(req.params.idproducto)
   );
 
@@ -48,23 +53,28 @@ const actualizarProducto = async (req, res) => {
       .status(204)
       .json({ message: `No existe el producto ${req.params.idproducto}.` });
   }
+  if (
+    !usuario.mercancias[productoIndex].categoria.includes(req.body.categoria)
+  ) {
+    usuario.tienda.categorias.push(req.body.categoria);
+  }
+  // Actualizar los datos
+  usuario.mercancias[productoIndex].nombre = req.body.nombre;
+  usuario.mercancias[productoIndex].descripcion = req.body.descripcion;
+  usuario.mercancias[productoIndex].precio = req.body.precio;
+  usuario.mercancias[productoIndex].categoria = req.body.categoria;
+  usuario.markModified("mercancias");
+  const resultado = await usuario.save();
+  res.json(resultado);
+});
 
-  // Update properties directly at the index
-  usuario.saleItems[productoIndex].name = req.body.name;
-  usuario.saleItems[productoIndex].description = req.body.description;
-  usuario.saleItems[productoIndex].price = req.body.price;
-  usuario.markModified("saleItems"); // Important!
-  const result = await usuario.save();
-  res.json(result);
-};
-
-const eliminarProducto = async (req, res) => {
+const eliminarProducto = asyncHandler(async (req, res) => {
   if (!req?.params?.idproducto)
     return res.status(400).json({ message: "No hay ID." });
 
-  const usuario = await User.findOne({ username: req.user }).exec();
+  const usuario = await Usuario.findOne({ nombreUsuario: req.username }).exec();
 
-  const productoIndex = usuario.saleItems.findIndex((item) =>
+  const productoIndex = usuario?.mercancias?.findIndex((item) =>
     item._id.equals(req.params.idproducto)
   );
 
@@ -73,20 +83,20 @@ const eliminarProducto = async (req, res) => {
       .status(204)
       .json({ message: `No existe el producto ${req.params.idproducto}.` });
   }
-  usuario.saleItems.splice(productoIndex, 1); // Remove the product
+  usuario.mercancias.splice(productoIndex, 1); // Remove the product
   await usuario.save(); // Save the updated user
 
-  res.json({ message: "Product deleted successfully" }); // Or send the deleted product
-};
+  res.json({ message: "Se ha eliminado el producto" }); // Or send the deleted product
+});
 
 const getProducto = async (req, res) => {
   if (!req?.params?.idproducto)
     return res.status(400).json({ message: "No hay ID del producto" });
-  const usuario = await User.findOne({ username: req.user })
-    .select("saleItems")
+  const usuario = await Usuario.findOne({ nombreUsuario: req.username })
+    .select("mercancias")
     .lean();
 
-  const productoIndex = usuario.saleItems.findIndex((item) =>
+  const productoIndex = usuario?.mercancias?.findIndex((item) =>
     item._id.equals(req?.params?.idproducto)
   );
 
@@ -96,7 +106,7 @@ const getProducto = async (req, res) => {
       .json({ message: `No existe el producto ${req?.params?.idproducto}.` });
   }
 
-  const producto = usuario.saleItems[productoIndex];
+  const producto = usuario?.mercancias[productoIndex];
   res.json(producto);
 };
 
