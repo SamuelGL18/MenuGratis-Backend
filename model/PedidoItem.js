@@ -2,9 +2,12 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const pedidoItem = new Schema({
+  owner: {
+    type: String,
+    required: true,
+  },
   productoId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
+    type: String,
     required: true,
   },
   cantidad: { type: Number, required: true },

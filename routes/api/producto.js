@@ -9,6 +9,5 @@ router
   .delete(productoController.eliminarProducto);
 
 router.route("/").post(productoController.agregarProducto);
-// .get(productoController);
 
 module.exports = router;

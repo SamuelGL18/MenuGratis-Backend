@@ -28,10 +28,12 @@ app.use(verificarJWT);
 app.use("/carrito", require("./routes/api/carrito"));
 app.use("/usuario", require("./routes/api/usuario"));
 app.use("/producto", require("./routes/api/producto"));
+app.use("/pedidosHechos", require("./routes/api/pedidosHechos"));
+app.use("/pedidosRecividos", require("./routes/api/pedidosRecividos"));
 
 mongoose.connection.once("open", () => {
-  console.log("Connected to database");
+  console.log("Conectado a la DB");
   app.listen(PORT, () => {
-    console.log(`Server running on port: ${PORT}`);
+    console.log(`Server en port: ${PORT}`);
   });
 });

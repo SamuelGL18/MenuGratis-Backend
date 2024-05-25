@@ -4,12 +4,13 @@ const Schema = mongoose.Schema;
 
 const pedido = new Schema({
   usuarioId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
+    type: String,
     required: true,
   },
-  itemsPedido: [pedidoItem],
-  total: { type: Number, required: true },
+  itemsPedido: {
+    type: [pedidoItem],
+  },
+  total: { type: Number },
   ubicacionEntrega: {
     type: String,
   },

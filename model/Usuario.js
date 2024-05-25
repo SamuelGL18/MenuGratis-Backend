@@ -18,9 +18,15 @@ const usuario = new Schema({
   refreshToken: {
     type: String,
   },
-  carrito: [pedidoItem],
-  pedidosHechos: [pedido],
-  pedidosRecividos: [pedido],
+  carrito: {
+    type: [pedidoItem],
+  },
+  pedidosHechos: {
+    type: [pedido],
+  },
+  pedidosRecividos: {
+    type: [pedido],
+  },
   perfilFacebook: {
     type: String,
   },

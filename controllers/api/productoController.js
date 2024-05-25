@@ -83,10 +83,10 @@ const eliminarProducto = asyncHandler(async (req, res) => {
       .status(204)
       .json({ message: `No existe el producto ${req.params.idproducto}.` });
   }
-  usuario.mercancias.splice(productoIndex, 1); // Remove the product
-  await usuario.save(); // Save the updated user
+  usuario.mercancias.splice(productoIndex, 1);
+  await usuario.save();
 
-  res.json({ message: "Se ha eliminado el producto" }); // Or send the deleted product
+  res.json({ message: "Se ha eliminado el producto" });
 });
 
 const getProducto = async (req, res) => {
