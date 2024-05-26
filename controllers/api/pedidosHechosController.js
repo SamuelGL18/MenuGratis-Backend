@@ -20,7 +20,11 @@ const getPedidosHechos = expressAsyncHandler(async (req, res) => {
       const mercancia = owner?.mercancias?.find(
         (item) => item?._id == producto.productoId
       );
-      factura.itemsPedido.push({ ...mercancia, subTotal: producto.subTotal });
+      factura.itemsPedido.push({
+        ...mercancia,
+        subTotal: producto.subTotal,
+        owner: producto.owner,
+      });
     }
     detallesPedidos.push(factura);
   }

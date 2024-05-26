@@ -43,6 +43,7 @@ const getCarrito = expressAsyncHandler(async (req, res) => {
     const producto = owner?.mercancias?.find(
       (producto) => producto?._id == item.productoId
     );
+
     return { ...item, producto };
   });
 
@@ -51,7 +52,11 @@ const getCarrito = expressAsyncHandler(async (req, res) => {
   const productosFiltrados = productos.filter(
     (producto) => producto !== undefined
   );
-  res.json(productosFiltrados);
+  const pedido = { productos: productosFiltrados, total: 0 };
+  for (const producto of pedido.productos) {
+    pedido.total = pedido.total + producto.subTotal;
+  }
+  res.json(pedido);
 });
 
 const enviarPedidos = expressAsyncHandler(async (req, res) => {
