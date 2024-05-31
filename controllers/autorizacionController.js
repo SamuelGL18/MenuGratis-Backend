@@ -33,7 +33,7 @@ const logear = asyncHandler(async (req, res) => {
     res.cookie("refreshtoken", refreshtoken, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "None",
+      sameSite: "strict",
       secure: true,
     });
     res.sendStatus(200);
