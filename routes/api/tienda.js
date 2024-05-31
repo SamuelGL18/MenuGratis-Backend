@@ -8,4 +8,6 @@ router
   .route("/:usuario/producto/:idproducto")
   .get(tiendaController.getProducto);
 
+router.route("/").get(tiendaController.getProductos);
+
 module.exports = router;

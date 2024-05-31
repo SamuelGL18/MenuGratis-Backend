@@ -47,4 +47,18 @@ const getProducto = asyncHandler(async (req, res) => {
   res.json(producto);
 });
 
-module.exports = { getTienda, getProducto };
+const getProductos = asyncHandler(async (req, res) => {
+  const owners = await Usuario.find({}, { nombreUsuario: 1, mercancias: 1 });
+  const datos = [];
+  for (const owner of owners) {
+    const tienda = {
+      nombreUsuario: owner.nombreUsuario,
+      mercancias: owner.mercancias,
+    };
+    datos.push(tienda);
+  }
+  console.log(datos);
+  res.json(datos);
+});
+
+module.exports = { getTienda, getProducto, getProductos };
