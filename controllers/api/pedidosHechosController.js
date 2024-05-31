@@ -24,6 +24,7 @@ const getPedidosHechos = expressAsyncHandler(async (req, res) => {
         ...mercancia,
         subTotal: producto.subTotal,
         owner: producto.owner,
+        cantidad: producto.cantidad,
       });
     }
     detallesPedidos.push(factura);

@@ -24,7 +24,11 @@ const getPedidosRecividos = expressAsyncHandler(async (req, res) => {
       const mercancia = usuarioEncontrado?.mercancias?.find(
         (item) => item?._id == producto.productoId
       );
-      factura.itemsPedido.push({ ...mercancia, subTotal: producto.subTotal });
+      factura.itemsPedido.push({
+        ...mercancia,
+        subTotal: producto.subTotal,
+        cantidad: producto.cantidad,
+      });
     }
     detallesPedidos.push(factura);
   }
